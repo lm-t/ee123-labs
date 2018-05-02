@@ -1,5 +1,8 @@
 #Parts of the code grabbed from David Barrat -- jp2-python
 import numpy as np
+import pywt
+from PIL import Image
+from scipy.signal import decimate
 
 def max_ndarray(mat):
     """
@@ -20,9 +23,9 @@ def extract_rgb_coeff(img):
     (width, height) = img.size
     img = img.copy()
 
-    mat_r = numpy.empty((width, height))
-    mat_g = numpy.empty((width, height))
-    mat_b = numpy.empty((width, height))
+    mat_r = np.empty((width, height))
+    mat_g = np.empty((width, height))
+    mat_b = np.empty((width, height))
 
     for i in range(width):
         for j in range(height):
@@ -39,27 +42,27 @@ def extract_rgb_coeff(img):
     coeffs_b = pywt.dwt2(mat_b, 'haar')
     return (coeffs_r, coeffs_g, coeffs_b)
 
-def img_from_dwt_coeff(coeff_dwt):
+def img_from_dwt_coeff(coeff_dwt, width, height):
     '''
     This function will recreate an Image object, based on the generated from dwt coefficients
     '''
     #Channel Red
     (coeffs_r, coeffs_g, coeffs_b) = coeff_dwt
-    cARed = numpy.array(coeffs_r[0])
-    (width, height) = coeffs_r.shape
-    cHRed = numpy.array(coeffs_r[1][0])
-    cVRed = numpy.array(coeffs_r[1][1])
-    cDRed = numpy.array(coeffs_r[1][2])
+    cARed = np.array(coeffs_r[0])
+    #(width, height) = coeffs_r.shape
+    cHRed = np.array(coeffs_r[1][0])
+    cVRed = np.array(coeffs_r[1][1])
+    cDRed = np.array(coeffs_r[1][2])
     #Channel Green
-    cAGreen = numpy.array(coeffs_g[0])
-    cHGreen = numpy.array(coeffs_g[1][0])
-    cVGreen = numpy.array(coeffs_g[1][1])
-    cDGreen = numpy.array(coeffs_g[1][2])
+    cAGreen = np.array(coeffs_g[0])
+    cHGreen = np.array(coeffs_g[1][0])
+    cVGreen = np.array(coeffs_g[1][1])
+    cDGreen = np.array(coeffs_g[1][2])
     #Channel Blue
-    cABlue = numpy.array(coeffs_b[0])
-    cHBlue = numpy.array(coeffs_b[1][0])
-    cVBlue = numpy.array(coeffs_b[1][1])
-    cDBlue = numpy.array(coeffs_b[1][2])
+    cABlue = np.array(coeffs_b[0])
+    cHBlue = np.array(coeffs_b[1][0])
+    cVBlue = np.array(coeffs_b[1][1])
+    cDBlue = np.array(coeffs_b[1][2])
 
     # maxValue per channel par matrix
     cAMaxRed = max_ndarray(cARed)
@@ -124,4 +127,11 @@ def img_from_dwt_coeff(coeff_dwt):
             B = (B/cDMaxBlue)*100.0
             new_value = (int(R), int(G), int(B))
             dwt_img.putpixel((i+width, j+height), new_value)
-return dwt_img
+    return dwt_img
+
+def downsample(img, factor):
+    np_img = np.array(img)
+    print(np_img.shape)
+    down = np_img[::factor,::factor,:]
+    down_img = Image.fromarray(down)
+    return down_img

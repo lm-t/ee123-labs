@@ -31,9 +31,13 @@ def main():
             sys.exit()
 
         #compressing image to it's Discrete Wavelet Transform
-        dwt_coeff = compression.extract_rgb_coeff(image)
-        dwt_image = compression.img_from_dwt_coeff(dwt_coeff)
-        
+        #dwt_coeff = compression.extract_rgb_coeff(image)
+        width, height = image.size
+        #dwt_image = compression.img_from_dwt_coeff(dwt_coeff, width, height)
+        #dwt_image.save('test.png')
+
+        down = compression.downsample(image, 3)
+        down.save('test_down.jpg')
         print("sending %s" % args.send)
 
     elif args.recieve:
