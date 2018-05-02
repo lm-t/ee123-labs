@@ -1,5 +1,8 @@
 import argparse, sys
-import utils
+import compression
+from PIL import Image
+import numpy as np
+import pywt
 
 def main():
     # define the program description
@@ -16,12 +19,23 @@ def main():
     if len(sys.argv) == 1:
         print("no options selected. use --help for usage")
         sys.exit()
+
     elif args.send and not args.recieve:
-        image = utils.load_img(args.send)
+        try:
+            image =  Image.open(args.send)
+        except IOError:
+            image = None
+
         if image == None:
             print("Error: could not find file", args.send)
             sys.exit()
+
+        #compressing image to it's Discrete Wavelet Transform
+        dwt_coeff = compression.extract_rgb_coeff(image)
+        dwt_image = compression.img_from_dwt_coeff(dwt_coeff)
+        
         print("sending %s" % args.send)
+
     elif args.recieve:
         print("recieving ...")
 
