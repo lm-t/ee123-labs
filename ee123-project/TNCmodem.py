@@ -26,6 +26,16 @@ from math import gcd
 from functools import reduce
 from numpy import ones,zeros, pi, cos, exp, sign
 
+import numpy.ctypeslib as npct
+from ctypes import c_int
+from ctypes import c_float
+
+array_1d_int = npct.ndpointer(dtype=np.int, ndim=1, flags='CONTIGUOUS')
+
+libcd = npct.load_library("./libpll", ".")
+libcd.pll.restype = c_int
+libcd.pll.argtypes= [array_1d_int, c_int, array_1d_int,array_1d_int,  array_1d_int,array_1d_int, c_int, c_float]
+
 # function to compute least common multipler
 def lcm(numbers):
     return reduce(lambda x, y: (x*y)//gcd(x,y), numbers, 1)
